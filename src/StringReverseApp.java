@@ -1,77 +1,82 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.*;
-
+import java.util.logging.*;
 
 public class StringReverseApp {
+  
+    private static final Logger logger = Logger.getLogger(StringReverseApp.class.getName());
     public static void main(String[] args) throws Exception {
-        FileReader inputFile=null;
-        BufferedReader bufferedReader=null;
-        FileWriter fileWriter=null;
-        BufferedWriter bufferWriter=null;
-        String data="";
 
-        try{
-        inputFile = new FileReader("c:/Users/vaishnavi.sonawane/Documents/AssigmentFile-I/input.txt");
-        bufferedReader = new BufferedReader(inputFile);
-        data =  bufferedReader.readLine();
-        }
-        catch(FileNotFoundException ex)
-        {
-            ex.printStackTrace();
-         }
-        finally{
-        bufferedReader.close();
-        }
-        
-        StringBuffer newData = new StringBuffer();
-        char temp='.';
-        boolean flag=false;
-        int dataLength = data.length();
+        FileReader inputFile = null;
+        BufferedReader bufferedReader = null;
+        FileWriter fileWriter = null;
+        BufferedWriter bufferWriter = null;
 
-        for(int i=dataLength-1;i>=0;i--)
-        {
-            if(data.charAt(i) == ',' || data.charAt(i) =='!'|| data.charAt(i)== '.'|| data.charAt(i)== ';')
-            {   
-                if(flag)
-                    newData.append(temp);
-                temp = data.charAt(i);
-                flag=true;
-            }else{
-                    newData.append(data.charAt(i));
-            }
+        try {
+           
+            inputFile = new FileReader("c:/Users/vaishnavi.sonawane/Documents/AssigmentFile-I/input.txt");
+            bufferedReader = new BufferedReader(inputFile);
+
             
-        }
-        newData.append(temp);
-        
-        try{
-           fileWriter = new FileWriter("c:/Users/vaishnavi.sonawane/Documents/AssigmentFile-I/output.txt");
+            fileWriter = new FileWriter("c:/Users/vaishnavi.sonawane/Documents/AssigmentFile-I/output.txt");
             bufferWriter = new BufferedWriter(fileWriter);
-        }
-        catch(FileNotFoundException ex)
-        {
+
+            String data;
+            while ((data = bufferedReader.readLine()) != null) {
+             
+                bufferWriter.write(reverseLine(data));
+                bufferWriter.newLine(); 
+                
+            }   
+
+        } catch (IOException ex) {
             ex.printStackTrace();
+            logger.log(Level.SEVERE, "Error reading or writing file", ex);
+        } finally {
+            try {
+                if (bufferedReader != null)
+                    bufferedReader.close();
+                if (inputFile != null)
+                    inputFile.close();
+                if (bufferWriter != null) {
+                    bufferWriter.flush();
+                    bufferWriter.close();
+                }
+                if (fileWriter != null)
+                    fileWriter.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                logger.log(Level.SEVERE, "Error closing file streams", ex);
+            }
         }
 
-        try{
-            File outputFile = new File("c:/Users/vaishnavi.sonawane/Documents/AssigmentFile-I/output.txt");
-            if(!outputFile.exists())
-            {
-                outputFile.createNewFile();
-                bufferWriter.append(newData);
-            }
-            else
-                bufferWriter.append(newData);
-        }
-        catch(Exception ex)
+    }
+    
+
+    public static String reverseLine(String line)
+    {
+        String[] lineArr = line.split(" ");
+        StringBuilder reverseLine = new StringBuilder();
+
+        for(int i=0;i<lineArr.length;i++)
         {
-            ex.printStackTrace();
+            reverseLine.append(reverseWord(lineArr[i])).append(" ");
         }
-        finally{
-            bufferWriter.close();
+        return reverseLine.toString().trim();
+    }
+
+    public static String reverseWord(String word)
+    {
+        String newWord="";
+        String tempChar="";
+        System.out.println(newWord);
+        if(word.charAt(word.length()-1) == ',' ||word.charAt(word.length()-1) == ';' ||word.charAt(word.length()-1) == '!' ||word.charAt(word.length()-1) == '.')
+        {
+            tempChar=String.valueOf(word.charAt(word.length()-1));
+            newWord = word.substring(0, word.length()-1);
+        }else{
+            newWord = word.substring(0, word.length());
         }
+        
+        return new StringBuilder(newWord).reverse().toString()+tempChar;
     }
 }
